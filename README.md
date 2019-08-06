@@ -12,4 +12,5 @@ APP下载工具链接：https://pan.baidu.com/s/1FpO7Suf3HKmFG9RSkq1bLQ 提取�
 
 测试样机：
 https://detail.m.tmall.com/item.htm?id=588600707880
+
 https://detail.m.tmall.com/item.htm?id=579762201357
