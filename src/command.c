@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        command.h
  * Author:           王志华       
  * Version:          1.0
@@ -41,8 +41,7 @@
 #include "gm_sms.h"
 #include "g_sensor.h"
 #include "auto_test.h"
-#include "bms.h"
-
+#include "watch_dog.h"
 
 #pragma diag_suppress 870 
 
@@ -107,8 +106,9 @@ typedef enum
     CMD_RECORD,
     CMD_RESULT,
     CMD_PMTK,
-    CMD_BMS,
-	CMD_CMD_MAX
+    CMD_HARD_REBOOT,
+    
+	CMD_CMD_MAX,
 }CommandID;
 
 typedef struct
@@ -177,7 +177,7 @@ static CommandInfo s_cmd_infos[CMD_CMD_MAX + 1] =
     {"RECORD",CMD_RECORD},
     {"RESULT",CMD_RESULT},
 	{"PMTK",CMD_PMTK},
-	{"BMS",CMD_BMS},
+	{"HARDREBOOT",CMD_HARD_REBOOT},
 };
 
 static CommandID get_cmd_id(const char* cmd_name);
@@ -2595,70 +2595,10 @@ GM_ERRCODE command_on_receive_data(CommandReceiveFromEnum from, char* p_cmd, u16
 		}
 		break;
 
-		case CMD_BMS:
+		case CMD_HARD_REBOOT:
 		{
-			char cmdString[5];
-			char cmd1String[5];
-			char cmd[5];
-
-			GM_memset(cmdString, 0x00, sizeof(cmdString));
-			GM_memset(cmd1String, 0x00, sizeof(cmd1String));
-			para_num = command_scan((char*)p_cmd_content, "s;ss", cmd_name,&cmdString,&cmd1String);
-			if(para_num == 2)
-			{
-				if (2 == GM_strlen(cmdString))
-				{
-					cmd[0] = (util_chr(cmdString[0]) << 4) | (util_chr(cmdString[1]));
-				}
-				else if (1 == GM_strlen(cmdString))
-				{
-					cmd[0] = util_chr(cmdString[0]);
-				}
-				else
-				{
-					GM_memcpy(p_rsp, set_fail_rsp(from), CMD_MAX_LEN);
-					break;
-				}
-				
-				bms_cmd_write(cmd,1);
-				//GM_memcpy(p_rsp, set_success_rsp(from), CMD_MAX_LEN);
-			}
-			else if (para_num == 3)
-			{
-				if (2 == GM_strlen(cmdString))
-				{
-					cmd[0] = (util_chr(cmdString[0]) << 4) | (util_chr(cmdString[1]));
-				}
-				else if (1 == GM_strlen(cmdString))
-				{
-					cmd[0] = util_chr(cmdString[0]);
-				}
-				else
-				{
-					GM_memcpy(p_rsp, set_fail_rsp(from), CMD_MAX_LEN);
-					break;
-				}
-				
-				if (2 == GM_strlen(cmd1String))
-				{
-					cmd[1] = (util_chr(cmd1String[0]) << 4) | (util_chr(cmd1String[1]));
-				}
-				else if (1 == GM_strlen(cmd1String))
-				{
-					cmd[1] = util_chr(cmd1String[0]);
-				}
-				else
-				{
-					GM_memcpy(p_rsp, set_fail_rsp(from), CMD_MAX_LEN);
-					break;
-				}
-
-				bms_cmd_write(cmd,2);
-			}
-			else
-			{
-				GM_memcpy(p_rsp, set_fail_rsp(from), CMD_MAX_LEN);
-			}
+			watch_dog_hard_reboot();
+			GM_memcpy(p_rsp, set_success_rsp(from), CMD_MAX_LEN);
 		}
 		break;
 		

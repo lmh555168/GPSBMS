@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        config_service.h
  * Author:           梁震       
  * Version:          1.0
@@ -785,6 +785,8 @@ void config_service_change_port(ConfigParamEnum idx, u16 port);
  * Others:     无
  */
 StreamType config_service_update_socket_type(void);
+
+StreamType config_service_agps_socket_type(void);
 
 #endif
 

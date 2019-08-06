@@ -12,7 +12,7 @@
 #include "gsm.h"
 #include "config_service.h"
 #include "protocol_goome.h"
-#include "protocol_concox.h"
+//#include "protocol_concox.h"
 #include "protocol_jt808.h"
 #include "gprs.h"
 #include "system_state.h"
@@ -481,8 +481,7 @@ GM_ERRCODE gps_service_create(bool first_create)
         }
     }
 	
-    s_gps_socket.access_id = SOCKET_INDEX_MAIN;
-    gm_socket_init(&s_gps_socket);
+    gm_socket_init(&s_gps_socket, SOCKET_INDEX_MAIN);
 
     GM_memset(addr, 0x00, sizeof(addr));
 
@@ -522,6 +521,7 @@ GM_ERRCODE gps_service_create(bool first_create)
     else
     {
         gm_socket_set_ip_port(&s_gps_socket, IP, port, STREAM_TYPE_STREAM);
+        system_state_set_ip_cache(SOCKET_INDEX_MAIN, IP);
     }
 
 
@@ -720,9 +720,6 @@ static GM_ERRCODE protocol_pack_gps_msg(GpsDataModeEnum mode, const GPSData *gps
     {
     case PROTOCOL_GOOME:
         protocol_goome_pack_gps_msg(mode, gps, pdata, idx, len);  //17 bytes
-        break;
-    case PROTOCOL_CONCOX:
-        protocol_concox_pack_gps_msg(mode, gps, pdata, idx, len); // 39 bytes
         break;
     case PROTOCOL_JT808:
         protocol_jt_pack_gps_msg(mode, gps, pdata, idx, len);  // 53 bytes
@@ -931,9 +928,6 @@ static GM_ERRCODE protocol_pack_lbs_msg(u8 *pdata, u16 *idx, u16 len)
     case PROTOCOL_GOOME:
         protocol_goome_pack_lbs_msg(pdata, idx, len);  //47 bytes
         break;
-    case PROTOCOL_CONCOX:
-        protocol_concox_pack_lbs_msg(pdata, idx, len); //63 bytes
-        break;
     case PROTOCOL_JT808:
         protocol_jt_pack_lbs_msg(pdata, idx, len);  // max 97 bytes
         break;
@@ -980,9 +974,6 @@ static GM_ERRCODE protocol_pack_alarm_msg(AlarmInfo *alarm,u8 *pdata, u16 *idx, 
     {
     case PROTOCOL_GOOME:
         protocol_goome_pack_alarm_msg(alarm, pdata, idx, len);  //35 bytes
-        break;
-    case PROTOCOL_CONCOX:
-        protocol_concox_pack_alarm_msg(alarm, pdata, idx, len);   //42 bytes
         break;
     case PROTOCOL_JT808:
         protocol_jt_pack_gps_msg2(pdata, idx, len);  // 53 bytes
@@ -1033,9 +1024,6 @@ static GM_ERRCODE protocol_pack_position_request_msg(u8 *mobile_num, u8 num_len,
     {
     case PROTOCOL_GOOME:
         protocol_goome_pack_position_request_msg(mobile_num,num_len,command,cmd_len, pdata, idx, len);  //53+cmd_len bytes
-        break;
-    case PROTOCOL_CONCOX:
-        protocol_concox_pack_position_request_msg(mobile_num,num_len,command,cmd_len, pdata, idx, len);   //45 bytes
         break;
     default:
         LOG(WARN,"clock(%d) gps_service_push_position_request assert(app protocol(%d)) failed.", util_clock(), config_service_get_app_protocol());

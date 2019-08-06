@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        hard_ware.h
  * Author:           王志华       
  * Version:          1.0
@@ -1216,14 +1216,14 @@ GM_ERRCODE hard_ware_reboot(const BootReason reason,U16 delay_seconds)
  */
 GM_ERRCODE hard_ware_sleep(void)
 {
-	if (0 == ZG_SleepEnable())
+	if (0 == GM_SleepEnable())
 	{
 		return GM_HARD_WARE_ERROR;
 	}
 	else
 	{
 		//上传日志
-		JsonObject* p_log_root = json_create();;
+		JsonObject* p_log_root = json_create();
 		json_add_string(p_log_root, "event", ("sleep"));
 		json_add_int(p_log_root, "csq", gsm_get_csq());
 		log_service_upload(INFO,p_log_root);
@@ -1248,7 +1248,7 @@ GM_ERRCODE hard_ware_close_gps(void)
  */
 GM_ERRCODE hard_ware_awake(void)
 {
-	if (0 == ZG_SleepDisable())
+	if (0 == GM_SleepDisable())
 	{
 		return GM_HARD_WARE_ERROR;
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        g_sensor.h
  * Author:           王志华       
  * Version:          1.0
@@ -1487,6 +1487,14 @@ static void calculate_moving_avg(Vector3D sensor_aclr, int num, PVector3D p_aclr
 
 static void check_static_or_run(float vehicle_horizontal_aclr_magnitude)
 {
+	//不过不休眠，也不判断静止	
+	U16 sleep_time_minute_threshold = 0;
+	config_service_get(CFG_SLEEP_TIME, TYPE_SHORT, &sleep_time_minute_threshold, sizeof(sleep_time_minute_threshold));
+	if(0 == sleep_time_minute_threshold)
+	{
+		system_state_set_vehicle_state(VEHICLE_STATE_RUN);
+		return;
+	}
 	
     //1、正常行驶:加速度（传感器）超过阈值
     if (vehicle_horizontal_aclr_magnitude >= s_gsensor.threshold.run_thr)

@@ -77,13 +77,13 @@ typedef struct
 
 typedef struct
 {
-    u8 OemId[5];  //  
-    u16 wProvID;     // 省域ID
-    u16 wCityID;     // 市域ID
-    u8 VehNum[12];  // 机动车号牌
-    u8 VehLicCol;   // 车牌颜色
-    u8 AtType;       // 部标协议类型(标准 补充)
-    u8 DevId[7];     // 终端ID
+    u8 OEM_id[5];  //  
+    u16 province_id;     // 省域ID
+    u16 city_id;     // 市域ID
+    u8 vehicle_number[12];  // 机动车号牌
+    u8 vehicle_color;   // 车牌颜色
+    u8 AT_protocol;       // 部标协议类型(标准 补充)
+    u8 device_id[7];     // 终端ID
 }Jt808LoginStruct;
 
 
@@ -96,7 +96,7 @@ typedef struct
     u32 crc;
     u32 magic;
 
-    u8 valid_flag; // UOP_OK:正常  UOP_PARA_ERR:参数错误
+    u8 is_valid; // UOP_OK:正常  UOP_PARA_ERR:参数错误
     u16 para_none;
     u16 para_err;
     u16 para_open_err;
@@ -131,31 +131,31 @@ typedef struct
 
     SocketParamStruct    sock[6];
     u8 Apn[GOOME_APN_MAX_LENGTH];
-    u8 strUser[GOOME_APN_MAX_LENGTH];
-    u8 strPwd[GOOME_APN_MAX_LENGTH];   
-    u8 strSim[17];
-    u8 u1Reserved_14[13];
-    u32 dwReserved_1[10];
+    u8 para_user[GOOME_APN_MAX_LENGTH];
+    u8 para_pwd[GOOME_APN_MAX_LENGTH];   
+    u8 para_sim[17];
+    u8 reserved_u8_1[13];
+    u32 reserved_u32_1[10];
     
-    u16 AOnUpTim;  //RESERVED
-    u16 Jt_Heart_Locat_Tim;  //用于判断部标位置数据心跳的发送间隔
-    u16 UploadTim;    //  定时判断时间
-    u16 HeartTim;
-    u32 dwReserved_2;
+    u16 reserved_u16_1;  //RESERVED
+    u16 jt_location_heart_time;  //用于判断部标位置数据心跳的发送间隔
+    u16 upload_time;    //  定时判断时间
+    u16 heart_interval;
+    u32 reserved_u32_2;
     
-    u16 u2Reserved_1;
-    u16 DistThreshold;  // 上传时间间隔内,小速度漂移距离
-    u8  GpsUpdatTime;  //GPS定位检测时间,默认5秒
-    u8  HeartMode;  //0 自动检测模式   1 谷米正常心跳(0x03)  2 谷米扩展心跳(0x07)
+    u16 reserved_u16_2;
+    u16 distance_of_slow;  // 上传时间间隔内,小速度漂移距离
+    u8  gps_update_gap;  //GPS定位检测时间,默认5秒
+    u8  heart_protocol;  //0 自动检测模式   1 谷米正常心跳(0x03)  2 谷米扩展心跳(0x07)
     
-    u8  LocalTime;
-    u8  LocalTimeMM;
+    u8  local_time_hour;
+    u8  reserved_u8_2;
 
-    u8  SpeedSwitch;  //默认关
-    u8  SpeedThreshold;   // 超速阈?
-    u8  SpeedDetectTim;   // 超速检测时?
-    u8  Drive_Over_Time;  //RESERVED
-    u8  Drive_Relax_Time; //RESERVED
+    u8  speed_switch;  //默认关
+    u8  speed_threshold;   // 超速阈?
+    u8  speed_detect_time;   // 超速检测时?
+    u8  reserved_u8_3;
+    u8  reserved_u8_4;
     /*
     bit0   0 自动设防模式,1 手动设防模式,默认自动设防
     bit1   0:关闭震动报警,1 开启震动报警,默认关闭
@@ -193,39 +193,39 @@ typedef struct
     bit29 是否开启车辆移动报警 0:关闭 1:打开
     bit30 是否开启加速度报警(急加速、急减速、急转弯报警) 0:关闭 1:打开
     */
-    u32 feature_sf;
+    u32 param_bits;
     
-    u8  Reserved_s;     // 休眠模式
-    u8  CenNum[20];    // 中心号码
-    u8  UserNum1[16];  // 管理号码1
-    u8  UserNum2[16];  // 管理号码2
-    u8  UserNum3[16];  // 管理号码3
-    u8  UserNum4[16];  // 管理号码4
-    u8  Reserved_2[40];
+    u8  reserved_u8_5;     // 休眠模式
+    u8  center_number[20];    // 中心号码
+    u8  user_number_1[16];  // 管理号码1
+    u8  user_number_2[16];  // 管理号码2
+    u8  user_number_3[16];  // 管理号码3
+    u8  user_number_4[16];  // 管理号码4
+    u8  reserved_u8_6[40];
     
-    u8  AccGpsSt;      // 关联ACC状态reserved
-    u8  PowerVal;   //  PowerVlau
-    u8  LowPowerVal;  // LowPowerVlau  
-    u8  PowerOffVal;  //  NoPowerVlau
+    u8  reserved_u8_7;
+    u8  reserved_u8_8;
+    u8  reserved_u8_9;
+    u8  reserved_u8_10;
     u16 power_alarm_check_tim;  //断电报警检测时间
     u16 power_alarm_chr_tim;  //断电报警最小充电时间
     
     u16 turn_angle; // 拐点补传角度  wFlexInitAng
     u8 gps_type;
     u16 power_alarm_acc_tim;  //断电报警ACC跳变检测时间
-    u16 dwReserved_5;
+    u16 reserved_u16_3;
     
     u16  shake_threshold;   // G-SENSOR 震动值(mg) 震动阈值  wShakeVal
-    u8 reserver_u2;  //碰撞阈值修改过来,之前版本默认值400
+    u8 reserved_u8_11;
     Jt808LoginStruct login;
-    u8 def_cnt;   //震动报警判断次数
+    u8 shock_alarm_count;   //震动报警判断次数
     u8 map_url[51];
-    u8 Reserved_3[9];
+    u8 reserved_u8_12[9];
     
     u8 led_ctrl_mode; // 0xA5:灭灯模式LED_MOD_ALL_OFF  其它:正常灯模式 LED_MOD_NORMAL
     u16 language;  // 语言  无报警中文:0x00 0x01    无报警英文:0x00 0x02
     u8 angle_view_time;  //安装方向显示时间 默认10分钟 0xFF一直显示
-    u8 Flex_sw;   // 拐点补传 0:开,1:关
+    u8 reserved_u8_13;
 
     u8 shake_level;
     u8 shake_time;
@@ -238,39 +238,39 @@ typedef struct
      //低四位应用协议版本 0 :未知,1:V1.0, 2:V1.1  
      //高四位应用协议类型 0 :未知,1: goome  2 : concox  3: 808   4 : bsj
     u8 protocol_type; 
-    u8 Regis;//注册标志掉电保存
+    u8 jt_registered;//注册标志掉电保存
     u8 volt_grade;  //外部电压等级12V-24V-36V-48V-60V-72V-84V-96V
     u8 chr_delay_tim; // 开机充电延迟时间(外部控制用):分钟;
     u8 reopen_gps_time;  // 打开GPS多久后AGPS准备好要重新打开GPS
-    u8 LockIp;        // 是否锁IP  Dec-11-2018 0:不锁 1:锁汽车在线 2:锁万物在线 3:锁当前设置
+    u8 ip_lock_mode;        // 是否锁IP  Dec-11-2018 0:不锁 1:锁汽车在线 2:锁万物在线 3:锁当前设置
     VehicleState init_state;
     u8 min_snr;       // MTK GPS定位的最小信噪比参数
     
     u16 shake_alarm_timeout;  //自动设防模式下震动报警延时,默认值为:180秒
     u16 shake_alarm_interval;  //震动报警间隔,默认30分钟
     u16 defende_tim;  //自动设防延时时间,默认10分钟(600s)
-    u16 TraceDebug;
-    u16 staticrepTim;  //静止上传检测时间默认20秒
-    u8  staticrepSpeed;  //静止上传检测最小速度默认6km
-    u8  staticrepCnt;  //静止上传检测次数默认3次
-    u16 lbsInterval;
-    u16 gpsNotFixedTim;
+    u16 reserved_u16_4;
+    u16 static_check_interval;  //静止上传检测时间默认20秒
+    u8  static_check_speed;  //静止上传检测最小速度默认6km
+    u8  static_check_count;  //静止上传检测次数默认3次
+    u16 lbs_interval;
+    u16 gps_not_fix_time;
 
-    u16 AccCheckTim;  //ACC错误检测时间最小 10分钟,最大24小时
-    u16 wReserve10;
-    u16 wReserve11;
-    u16 wReserve12;
-    u16 wReserve13;
-    u16 wReserve14;
-    u16 wReserve15;
-    u16 wReserve16;
+    u16 acc_check_interval;  //ACC错误检测时间最小 10分钟,最大24小时
+    u16 reserved_u16_5;
+    u16 reserved_u16_6;
+    u16 reserved_u16_7;
+    u16 reserved_u16_8;
+    u16 reserved_u16_9;
+    u16 reserved_u16_10;
+    u16 reserved_u16_11;
 
-    Vector3D gravity_S;
-    Vector3D gravity_L;
+    Vector3D reserved_3d_1;
+    Vector3D reserved_3d_2;
     float sensor_threshold[THRESHOLD_ARRAY_LEN];
     
-    u8  authCode[100];//鉴权码最大100字节
-    u8 ReservBuff[156];
+    u8  jt_authority_code[100];//鉴权码最大100字节
+    u8 reserved_buff[156];
 
 }GprsParaFileType, *T_GprsParam;
 
@@ -329,7 +329,7 @@ static u32 goome_file_param_main_write(void)
     }
     
     s_Para->magic = MAGIC_NUMBER;
-    s_Para->valid_flag = UOP_OK;
+    s_Para->is_valid = UOP_OK;
     
     s_Para->para_write_total++;
     s_Para2->para_write_total++;
@@ -440,7 +440,7 @@ static u32 goome_file_write_minor_param(void)
     }
     
     s_Para2->magic = MAGIC_NUMBER;
-    s_Para2->valid_flag = UOP_OK;
+    s_Para2->is_valid = UOP_OK;
     
     s_Para->para2_write_total++;
     s_Para2->para2_write_total++;
@@ -580,7 +580,7 @@ static s32 goome_delete_file(u8 *file)
 static u8 param_write_back_free_mem(void)
 {
     s_Para->magic = MAGIC_NUMBER;
-    s_Para->valid_flag = UOP_OK;
+    s_Para->is_valid = UOP_OK;
     s_Para->len = sizeof(GprsParaFileType);
     s_Para->crc = applied_math_calc_common_crc16((u8*)&s_Para->magic, sizeof(GprsParaFileType)-8);  // 968
 
@@ -723,7 +723,7 @@ u8 read_param_from_file(void)
         }
         else if ((file1 != UOP_OK) && (file2 != UOP_OK))
         {
-            s_Para->valid_flag = UOP_PARA_ERR;
+            s_Para->is_valid = UOP_PARA_ERR;
         }
     }
     
@@ -889,7 +889,7 @@ GM_ERRCODE config_service_read_from_local(void)
     config_service_set_device((ConfigDeviceTypeEnum)s_nvram->DeviceType);
 
 	read_param_from_file();
-    if(UOP_PARA_ERR != s_Para->valid_flag && check_para_ok(s_Para))
+    if(UOP_PARA_ERR != s_Para->is_valid && check_para_ok(s_Para))
     {
         convert_para_to_cfg(s_Para);
 		LOG(INFO,"convert_para_to_cfg");
@@ -997,7 +997,7 @@ static void config_service_set_factory_deault(void)
 	value_u8 = false;
     config_service_set(CFG_IS_MOVEALARM_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-	value_u8 = false;
+	value_u8 = true;
     config_service_set(CFG_SMOOTH_TRACK, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
 	value_u8 = false;
@@ -1462,7 +1462,7 @@ static void convert_cfg_to_para(GprsParaFileType *para)
     GM_memset(para,0, sizeof(GprsParaFileType));
     para->len = sizeof(GprsParaFileType);
     para->magic = MAGIC_NUMBER;
-    para->valid_flag = UOP_OK;
+    para->is_valid = UOP_OK;
     
 	config_service_get(CFG_DEVICETYPE, TYPE_SHORT, &value_u16, sizeof(value_u16));
     para->device_type = value_u16;
@@ -1526,300 +1526,300 @@ static void convert_cfg_to_para(GprsParaFileType *para)
     GM_strcpy((char *)para->Apn,(const char*)value_str);
     
     config_service_get(CFG_APN_USER, TYPE_STRING, value_str, sizeof(value_str));
-    GM_strcpy((char *)para->strUser,(const char*)value_str);
+    GM_strcpy((char *)para->para_user,(const char*)value_str);
 
     config_service_get(CFG_APN_PWD, TYPE_STRING, value_str, sizeof(value_str));
-    GM_strcpy((char *)para->strPwd,(const char*)value_str);
+    GM_strcpy((char *)para->para_pwd,(const char*)value_str);
 
 
     config_service_get(CFG_JT_HBINTERVAL, TYPE_SHORT, &value_u16, sizeof(value_u16));
-    para->Jt_Heart_Locat_Tim = value_u16;
+    para->jt_location_heart_time = value_u16;
 
     config_service_get(CFG_UPLOADTIME, TYPE_SHORT, &value_u16, sizeof(value_u16));
-    para->UploadTim = value_u16;
+    para->upload_time = value_u16;
 
     // 心跳间隔
     config_service_get(CFG_HEART_INTERVAL, TYPE_SHORT, &value_u16, sizeof(value_u16));
-    para->HeartTim = value_u16;
+    para->heart_interval = value_u16;
     
     config_service_get(CFG_DISTANCE_FOR_LOW_SPEED, TYPE_SHORT, &value_u16, sizeof(value_u16));
-    para->DistThreshold = value_u16;
+    para->distance_of_slow = value_u16;
 
 	config_service_get(CFG_GPS_UPDATE_TIME, TYPE_BYTE, &value_u8, sizeof(value_u8));
-    para->GpsUpdatTime = value_u8;
+    para->gps_update_gap = value_u8;
 
     config_service_get(CFG_HBPROTOCOL, TYPE_BYTE, &value_u8, sizeof(value_u8));
-    para->HeartMode = value_u8;
+    para->heart_protocol = value_u8;
 
     config_service_get(CFG_TIME_ZONE, TYPE_BYTE, &value_char, sizeof(value_char));
-    para->LocalTime = value_char;
+    para->local_time_hour = value_char;
 
     config_service_get(CFG_SPEED_ALARM_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
-    para->SpeedSwitch = value_u8;
+    para->speed_switch = value_u8;
 
     config_service_get(CFG_SPEEDTHR, TYPE_BYTE, &value_u8, sizeof(value_u8));
-    para->SpeedThreshold = value_u8;
+    para->speed_threshold = value_u8;
 
     config_service_get(CFG_SPEED_CHECK_TIME, TYPE_BYTE, &value_u8, sizeof(value_u8));
-    para->SpeedDetectTim = value_u8;
+    para->speed_detect_time = value_u8;
 
-    para->Drive_Over_Time = 0;
-    para->Drive_Relax_Time = 0;
+    para->reserved_u8_3 = 0;
+    para->reserved_u8_4 = 0;
 
 
 
     config_service_get(CFG_IS_MANUAL_DEFENCE, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT0(para->feature_sf);
+        SET_BIT0(para->param_bits);
     }
     else
     {
-        CLR_BIT0(para->feature_sf);
+        CLR_BIT0(para->param_bits);
     }
 	
 	config_service_get(CFG_IS_SHAKE_ALARM_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT1(para->feature_sf);
+        SET_BIT1(para->param_bits);
     }
     else
     {
-        CLR_BIT1(para->feature_sf);
+        CLR_BIT1(para->param_bits);
     }
 
     config_service_get(CFG_SENSOR_ALARM_MODE, TYPE_BYTE, &value_u8, sizeof(value_u8));
     switch(value_u8)
     {
         case PWRALM_GPRS:
-            CLR_BIT2(para->feature_sf);
-            CLR_BIT3(para->feature_sf);
+            CLR_BIT2(para->param_bits);
+            CLR_BIT3(para->param_bits);
             break;
         case PWRALM_GPRS_SMS:
-            SET_BIT2(para->feature_sf);
-            CLR_BIT3(para->feature_sf);
+            SET_BIT2(para->param_bits);
+            CLR_BIT3(para->param_bits);
             break;
         case PWRALM_GPRS_SMS_CALL:
-            CLR_BIT2(para->feature_sf);
-            SET_BIT3(para->feature_sf);
+            CLR_BIT2(para->param_bits);
+            SET_BIT3(para->param_bits);
             break;
         case PWRALM_GPRS_CALL:
-            SET_BIT2(para->feature_sf);
-            SET_BIT3(para->feature_sf);
+            SET_BIT2(para->param_bits);
+            SET_BIT3(para->param_bits);
             break;
     }
 
     config_service_get(CFG_ALARM_SMS_ONE, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT6(para->feature_sf);
+        SET_BIT6(para->param_bits);
     }
     else
     {
-        CLR_BIT6(para->feature_sf);
+        CLR_BIT6(para->param_bits);
     }
 
 
     config_service_get(CFG_LOWBATTALM_DISABLE, TYPE_BYTE, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT7(para->feature_sf);
+        SET_BIT7(para->param_bits);
     }
     else
     {
-        CLR_BIT7(para->feature_sf);
+        CLR_BIT7(para->param_bits);
     }
 
     config_service_get(CFG_CUTOFFALM_DISABLE, TYPE_BYTE, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT9(para->feature_sf);
+        SET_BIT9(para->param_bits);
     }
     else
     {
-        CLR_BIT9(para->feature_sf);
+        CLR_BIT9(para->param_bits);
     }
 
 
     config_service_get(CFG_APN_CHECK, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT15(para->feature_sf);
+        SET_BIT15(para->param_bits);
     }
     else
     {
-        CLR_BIT15(para->feature_sf);
+        CLR_BIT15(para->param_bits);
     }
 
     config_service_get(CFG_APP_BATTERT_MGR, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT19(para->feature_sf);
+        SET_BIT19(para->param_bits);
     }
     else
     {
-        CLR_BIT19(para->feature_sf);
+        CLR_BIT19(para->param_bits);
     }
     
     config_service_get(CFG_POWER_ALARM_MODE, TYPE_BYTE, &value_u8, sizeof(value_u8));
     switch(value_u8)
     {
         case PWRALM_GPRS: 
-            CLR_BIT10(para->feature_sf);
-            CLR_BIT11(para->feature_sf);
+            CLR_BIT10(para->param_bits);
+            CLR_BIT11(para->param_bits);
             break;
         case PWRALM_GPRS_SMS:
-            SET_BIT10(para->feature_sf);
-            CLR_BIT11(para->feature_sf);
+            SET_BIT10(para->param_bits);
+            CLR_BIT11(para->param_bits);
             break;
         case PWRALM_GPRS_SMS_CALL:
-            CLR_BIT10(para->feature_sf);
-            SET_BIT11(para->feature_sf);
+            CLR_BIT10(para->param_bits);
+            SET_BIT11(para->param_bits);
             break;
         case PWRALM_GPRS_CALL:
-            SET_BIT10(para->feature_sf);
-            SET_BIT11(para->feature_sf);
+            SET_BIT10(para->param_bits);
+            SET_BIT11(para->param_bits);
             break;
     }
 
     config_service_get(CFG_IS_STATIC_UPLOAD, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        CLR_BIT13(para->feature_sf);
+        CLR_BIT13(para->param_bits);
     }
     else
     {
-        SET_BIT13(para->feature_sf);
+        SET_BIT13(para->param_bits);
     }
 
     config_service_get(CFG_IS_LBS_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT14(para->feature_sf);
+        SET_BIT14(para->param_bits);
     }
     else
     {
-        CLR_BIT14(para->feature_sf);
+        CLR_BIT14(para->param_bits);
     }
 
 
     config_service_get(CFG_OPEN_APGS, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT20(para->feature_sf);
+        SET_BIT20(para->param_bits);
     }
     else
     {
-        CLR_BIT20(para->feature_sf);
+        CLR_BIT20(para->param_bits);
     }
 
 	config_service_get(CFG_IS_90V_POWER, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT21(para->feature_sf);
+        SET_BIT21(para->param_bits);
     }
     else
     {
-        CLR_BIT21(para->feature_sf);
+        CLR_BIT21(para->param_bits);
     }
 
     config_service_get(CFG_IS_UART_IO_WHEN_SLEEP, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT22(para->feature_sf);
+        SET_BIT22(para->param_bits);
     }
     else
     {
-        CLR_BIT22(para->feature_sf);
+        CLR_BIT22(para->param_bits);
     }
 
     config_service_get(CFG_SMOOTH_TRACK, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT23(para->feature_sf);
+        SET_BIT23(para->param_bits);
     }
     else
     {
-        CLR_BIT23(para->feature_sf);
+        CLR_BIT23(para->param_bits);
     }
 
     config_service_get(CFG_BATTUPLOAD_DISABLE, TYPE_BYTE, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT24(para->feature_sf);
+        SET_BIT24(para->param_bits);
     }
     else
     {
-        CLR_BIT24(para->feature_sf);
+        CLR_BIT24(para->param_bits);
     }
 
 	config_service_get(CFG_GPS_CLOSE, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT25(para->feature_sf);
+        SET_BIT25(para->param_bits);
     }
     else
     {
-        CLR_BIT25(para->feature_sf);
+        CLR_BIT25(para->param_bits);
     }
 
     config_service_get(CFG_IS_UART_9600, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT26(para->feature_sf);
+        SET_BIT26(para->param_bits);
     }
     else
     {
-        CLR_BIT26(para->feature_sf);
+        CLR_BIT26(para->param_bits);
     }
 
     config_service_get(CFG_IS_RELAY_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT27(para->feature_sf);
+        SET_BIT27(para->param_bits);
     }
     else
     {
-        CLR_BIT27(para->feature_sf);
+        CLR_BIT27(para->param_bits);
     }
 
 	config_service_get(CFG_IS_MOVEALARM_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT29(para->feature_sf);
+        SET_BIT29(para->param_bits);
     }
     else
     {
-        CLR_BIT29(para->feature_sf);
+        CLR_BIT29(para->param_bits);
     }
 
 	config_service_get(CFG_IS_ACLRALARM_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
     if (value_u8)
     {
-        SET_BIT30(para->feature_sf);
+        SET_BIT30(para->param_bits);
     }
     else
     {
-        CLR_BIT30(para->feature_sf);
+        CLR_BIT30(para->param_bits);
     }
 
 
-    config_service_get(CFG_CENTER_NUMBER, TYPE_STRING, para->CenNum, sizeof(para->CenNum));
-    config_service_get(CFG_USER1_NUMBER, TYPE_STRING, para->UserNum1, sizeof(para->UserNum1));
-    config_service_get(CFG_USER2_NUMBER, TYPE_STRING, para->UserNum2, sizeof(para->UserNum2));
-    config_service_get(CFG_USER3_NUMBER, TYPE_STRING, para->UserNum3, sizeof(para->UserNum3));
-    config_service_get(CFG_USER4_NUMBER, TYPE_STRING, para->UserNum4, sizeof(para->UserNum4));
+    config_service_get(CFG_CENTER_NUMBER, TYPE_STRING, para->center_number, sizeof(para->center_number));
+    config_service_get(CFG_USER1_NUMBER, TYPE_STRING, para->user_number_1, sizeof(para->user_number_1));
+    config_service_get(CFG_USER2_NUMBER, TYPE_STRING, para->user_number_2, sizeof(para->user_number_2));
+    config_service_get(CFG_USER3_NUMBER, TYPE_STRING, para->user_number_3, sizeof(para->user_number_3));
+    config_service_get(CFG_USER4_NUMBER, TYPE_STRING, para->user_number_4, sizeof(para->user_number_4));
 
 
-    para->AccGpsSt  = 0;
+    para->reserved_u8_7  = 0;
 
-    para->PowerVal     = 12;
+    para->reserved_u8_8     = 12;
 
     // 低电阀值
-    para->LowPowerVal = 10;
+    para->reserved_u8_9 = 10;
     
     // 断电阀值
-    para->PowerOffVal  = 5;
+    para->reserved_u8_10  = 5;
 
     config_service_get(CFG_POWER_CHECK_TIME, TYPE_SHORT, &value_u16, sizeof(value_u16));
     para->power_alarm_check_tim = value_u16;
@@ -1841,31 +1841,31 @@ static void convert_cfg_to_para(GprsParaFileType *para)
 
 
     config_service_get(CFG_JT_DEVICE_ID, TYPE_STRING, value_str, sizeof(value_str));
-    GM_memcpy(para->login.DevId, value_str, sizeof(para->login.DevId));
+    GM_memcpy(para->login.device_id, value_str, sizeof(para->login.device_id));
     
     config_service_get(CFG_JT_OEM_ID, TYPE_STRING, value_str, sizeof(value_str));
-    GM_memcpy(para->login.OemId, value_str, sizeof(para->login.OemId));
+    GM_memcpy(para->login.OEM_id, value_str, sizeof(para->login.OEM_id));
     
     config_service_get(CFG_JT_VEHICLE_NUMBER, TYPE_STRING, value_str, sizeof(value_str));
-    GM_memcpy(para->login.VehNum, value_str, sizeof(para->login.VehNum));
+    GM_memcpy(para->login.vehicle_number, value_str, sizeof(para->login.vehicle_number));
 
     config_service_get(CFG_JT_PROVINCE, TYPE_SHORT, &value_u16, sizeof(value_u16));
-    para->login.wProvID = value_u16;
+    para->login.province_id = value_u16;
     
     config_service_get(CFG_JT_CITY, TYPE_SHORT, &value_u16, sizeof(value_u16));
-    para->login.wCityID = value_u16;
+    para->login.city_id = value_u16;
 
     config_service_get(CFG_JT_AT_TYPE, TYPE_BYTE, &value_u8, sizeof(value_u8));
-    para->login.AtType = value_u8;
+    para->login.AT_protocol = value_u8;
 
     config_service_get(CFG_JT_VEHICLE_COLOR, TYPE_BYTE, &value_u8, sizeof(value_u8));
-    para->login.VehLicCol = value_u8;
+    para->login.vehicle_color = value_u8;
 
     config_service_get(CFG_JT_AUTH_CODE, TYPE_STRING, value_str, sizeof(value_str));
-    GM_memcpy(para->authCode, value_str, sizeof(para->authCode));
+    GM_memcpy(para->jt_authority_code, value_str, sizeof(para->jt_authority_code));
 
     config_service_get(CFG_SHAKE_COUNT, TYPE_BYTE, &value_u8, sizeof(value_u8));
-    para->def_cnt = value_u8;
+    para->shock_alarm_count = value_u8;
 
     config_service_get(CFG_MAP_URL, TYPE_STRING, value_str, sizeof(value_str));
     GM_strncpy((char *)para->map_url, (const char *)value_str, sizeof(para->map_url));
@@ -1876,7 +1876,7 @@ static void convert_cfg_to_para(GprsParaFileType *para)
     config_service_get(CFG_SEN_ANGLE_SHOW_TIME, TYPE_BYTE, &value_u8, sizeof(value_u8));
     para->angle_view_time = value_u8;
 
-    para->Flex_sw        = 0; 
+    para->reserved_u8_13        = 0; 
 
 	config_service_get(CFG_SHAKE_LEVEL, TYPE_BYTE, &value_u8, sizeof(value_u8));
     para->shake_level = value_u8;
@@ -1903,13 +1903,13 @@ static void convert_cfg_to_para(GprsParaFileType *para)
     para->protocol_type = MERGEBCD(value_u8,value_u8_2);
 
     config_service_get(CFG_JT_ISREGISTERED, TYPE_BOOL, &value_u8, sizeof(value_u8));
-    para->Regis = value_u8;
+    para->jt_registered = value_u8;
 
     config_service_get(CFG_CHARGE_DELAY, TYPE_SHORT, &value_u16, sizeof(value_u16));
     para->chr_delay_tim = value_u16;
 
     config_service_get(CFG_SERVERLOCK, TYPE_BYTE, &value_u8, sizeof(value_u8));
-    para->LockIp = value_u8;
+    para->ip_lock_mode = value_u8;
 
     config_service_get(CFG_MIN_SNR, TYPE_BYTE, &value_u8, sizeof(value_u8));
     para->min_snr = value_u8;
@@ -1927,25 +1927,25 @@ static void convert_cfg_to_para(GprsParaFileType *para)
 
 
     config_service_get(CFG_STATIC_CHECK_TIME, TYPE_SHORT, &value_u16, sizeof(value_u16));
-    para->staticrepTim = value_u16;
+    para->static_check_interval = value_u16;
 
     config_service_get(CFG_STATIC_CHECK_SPEED, TYPE_BYTE, &value_u8, sizeof(value_u8));
-    para->staticrepSpeed= value_u8;
+    para->static_check_speed= value_u8;
 
     config_service_get(CFG_STATIC_CHECK_COUNT, TYPE_BYTE, &value_u8, sizeof(value_u8));
-    para->staticrepCnt= value_u8;
+    para->static_check_count= value_u8;
 
     config_service_get(CFG_LBS_INTERVAL, TYPE_SHORT, &value_u16, sizeof(value_u16));
-    para->lbsInterval = value_u16;
+    para->lbs_interval = value_u16;
 
     config_service_get(CFG_WAIT_GPS_TIME, TYPE_SHORT, &value_u16, sizeof(value_u16));
-    para->gpsNotFixedTim = value_u16;
+    para->gps_not_fix_time = value_u16;
 
     config_service_get(CFG_REOPEN_GSP_TIME, TYPE_BYTE, &value_u8, sizeof(value_u8));
     para->reopen_gps_time = value_u8;
 
     config_service_get(CFG_ACC_CHECK_TIME, TYPE_SHORT, &value_u16, sizeof(value_u16));
-    para->AccCheckTim = value_u16;
+    para->acc_check_interval = value_u16;
 
 	config_service_get(CFG_SEN_RAPID_ACLR, TYPE_FLOAT, &value_float, sizeof(value_float));
     para->sensor_threshold[THRESHOLD_INDEX_FOR_RAPID_ACLR] = value_float;
@@ -2022,44 +2022,44 @@ static void convert_para_to_cfg(const GprsParaFileType *para)
     
 
 	config_service_set(CFG_APN_NAME, TYPE_STRING, &para->Apn, GM_strlen((const char*)para->Apn));
-	config_service_set(CFG_APN_USER, TYPE_STRING, &para->strUser, GM_strlen((const char*)para->strUser));
-	config_service_set(CFG_APN_PWD, TYPE_STRING, &para->strPwd, GM_strlen((const char*)para->strPwd));
+	config_service_set(CFG_APN_USER, TYPE_STRING, &para->para_user, GM_strlen((const char*)para->para_user));
+	config_service_set(CFG_APN_PWD, TYPE_STRING, &para->para_pwd, GM_strlen((const char*)para->para_pwd));
 
 
-    value_u16 = para->Jt_Heart_Locat_Tim;
+    value_u16 = para->jt_location_heart_time;
     config_service_set(CFG_JT_HBINTERVAL, TYPE_SHORT, &value_u16, sizeof(value_u16));
 
-    value_u16 = para->UploadTim;
+    value_u16 = para->upload_time;
     config_service_set(CFG_UPLOADTIME, TYPE_SHORT, &value_u16, sizeof(value_u16));
 
     // 心跳间隔
-    value_u16 = para->HeartTim;
+    value_u16 = para->heart_interval;
     config_service_set(CFG_HEART_INTERVAL, TYPE_SHORT, &value_u16, sizeof(value_u16));
     
-    value_u16 = para->DistThreshold;
+    value_u16 = para->distance_of_slow;
     config_service_set(CFG_DISTANCE_FOR_LOW_SPEED, TYPE_SHORT, &value_u16, sizeof(value_u16));
 
-    value_u8 = para->GpsUpdatTime;
+    value_u8 = para->gps_update_gap;
 	config_service_set(CFG_GPS_UPDATE_TIME, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    value_u8 = para->HeartMode;
+    value_u8 = para->heart_protocol;
     config_service_set(CFG_HBPROTOCOL, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    value_s8 = para->LocalTime;
+    value_s8 = para->local_time_hour;
     config_service_set(CFG_TIME_ZONE, TYPE_BYTE, &value_s8, sizeof(value_s8));
 
-    value_u8 = para->SpeedSwitch;
+    value_u8 = para->speed_switch;
     config_service_set(CFG_SPEED_ALARM_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = para->SpeedThreshold;
+    value_u8 = para->speed_threshold;
     config_service_set(CFG_SPEEDTHR, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    value_u8 = para->SpeedDetectTim;
+    value_u8 = para->speed_detect_time;
     config_service_set(CFG_SPEED_CHECK_TIME, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    if(GET_BIT2(para->feature_sf))
+    if(GET_BIT2(para->param_bits))
     {
-        if(GET_BIT3(para->feature_sf))
+        if(GET_BIT3(para->param_bits))
         {
             value_u8 = PWRALM_GPRS_CALL;
             config_service_set(CFG_SENSOR_ALARM_MODE, TYPE_BYTE, &value_u8, sizeof(value_u8));
@@ -2072,7 +2072,7 @@ static void convert_para_to_cfg(const GprsParaFileType *para)
     }
     else
     {
-        if(GET_BIT3(para->feature_sf))
+        if(GET_BIT3(para->param_bits))
         {
             value_u8 = PWRALM_GPRS_SMS_CALL;
             config_service_set(CFG_SENSOR_ALARM_MODE, TYPE_BYTE, &value_u8, sizeof(value_u8));
@@ -2084,24 +2084,24 @@ static void convert_para_to_cfg(const GprsParaFileType *para)
         }
     }
 
-    value_u8 = GET_BIT0(para->feature_sf);
+    value_u8 = GET_BIT0(para->param_bits);
     config_service_set(CFG_IS_MANUAL_DEFENCE, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-	value_u8 = GET_BIT1(para->feature_sf);
+	value_u8 = GET_BIT1(para->param_bits);
     config_service_set(CFG_IS_SHAKE_ALARM_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT6(para->feature_sf);
+    value_u8 = GET_BIT6(para->param_bits);
     config_service_set(CFG_ALARM_SMS_ONE, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT7(para->feature_sf);
+    value_u8 = GET_BIT7(para->param_bits);
     config_service_set(CFG_LOWBATTALM_DISABLE, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT9(para->feature_sf);
+    value_u8 = GET_BIT9(para->param_bits);
     config_service_set(CFG_CUTOFFALM_DISABLE, TYPE_BYTE, &value_u8, sizeof(value_u8));
     
-    if(GET_BIT10(para->feature_sf))
+    if(GET_BIT10(para->param_bits))
     {
-        if(GET_BIT11(para->feature_sf))
+        if(GET_BIT11(para->param_bits))
         {
             value_u8 = PWRALM_GPRS_CALL;
             config_service_set(CFG_POWER_ALARM_MODE, TYPE_BYTE, &value_u8, sizeof(value_u8));
@@ -2114,7 +2114,7 @@ static void convert_para_to_cfg(const GprsParaFileType *para)
     }
     else
     {
-        if(GET_BIT11(para->feature_sf))
+        if(GET_BIT11(para->param_bits))
         {
             value_u8 = PWRALM_GPRS_SMS_CALL;
             config_service_set(CFG_POWER_ALARM_MODE, TYPE_BYTE, &value_u8, sizeof(value_u8));
@@ -2127,54 +2127,54 @@ static void convert_para_to_cfg(const GprsParaFileType *para)
     }
 
 
-    value_u8 = GET_BIT13(para->feature_sf);
+    value_u8 = GET_BIT13(para->param_bits);
     value_u8 = value_u8?false:true;
     config_service_set(CFG_IS_STATIC_UPLOAD, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT14(para->feature_sf);
+    value_u8 = GET_BIT14(para->param_bits);
     config_service_set(CFG_IS_LBS_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT15(para->feature_sf);
+    value_u8 = GET_BIT15(para->param_bits);
     config_service_set(CFG_APN_CHECK, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT19(para->feature_sf);
+    value_u8 = GET_BIT19(para->param_bits);
     config_service_set(CFG_APP_BATTERT_MGR, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT20(para->feature_sf);
+    value_u8 = GET_BIT20(para->param_bits);
     config_service_set(CFG_OPEN_APGS, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT21(para->feature_sf);
+    value_u8 = GET_BIT21(para->param_bits);
 	config_service_set(CFG_IS_90V_POWER, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT22(para->feature_sf);
+    value_u8 = GET_BIT22(para->param_bits);
     config_service_set(CFG_IS_UART_IO_WHEN_SLEEP, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT23(para->feature_sf);
+    value_u8 = GET_BIT23(para->param_bits);
     config_service_set(CFG_SMOOTH_TRACK, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT24(para->feature_sf);
+    value_u8 = GET_BIT24(para->param_bits);
     config_service_set(CFG_BATTUPLOAD_DISABLE, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT25(para->feature_sf);
+    value_u8 = GET_BIT25(para->param_bits);
 	config_service_set(CFG_GPS_CLOSE, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT26(para->feature_sf);
+    value_u8 = GET_BIT26(para->param_bits);
     config_service_set(CFG_IS_UART_9600, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    value_u8 = GET_BIT27(para->feature_sf);
+    value_u8 = GET_BIT27(para->param_bits);
     config_service_set(CFG_IS_RELAY_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-	value_u8 = GET_BIT29(para->feature_sf);
+	value_u8 = GET_BIT29(para->param_bits);
     config_service_set(CFG_IS_MOVEALARM_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-	value_u8 = GET_BIT30(para->feature_sf);
+	value_u8 = GET_BIT30(para->param_bits);
     config_service_set(CFG_IS_ACLRALARM_ENABLE, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
-    config_service_set(CFG_CENTER_NUMBER, TYPE_STRING, para->CenNum, GM_strlen((char *)para->CenNum));
-    config_service_set(CFG_USER1_NUMBER, TYPE_STRING, para->UserNum1, GM_strlen((char *)para->UserNum1));
-    config_service_set(CFG_USER2_NUMBER, TYPE_STRING, para->UserNum2, GM_strlen((char *)para->UserNum2));
-    config_service_set(CFG_USER3_NUMBER, TYPE_STRING, para->UserNum3, GM_strlen((char *)para->UserNum3));
-    config_service_set(CFG_USER4_NUMBER, TYPE_STRING, para->UserNum4, GM_strlen((char *)para->UserNum4));
+    config_service_set(CFG_CENTER_NUMBER, TYPE_STRING, para->center_number, GM_strlen((char *)para->center_number));
+    config_service_set(CFG_USER1_NUMBER, TYPE_STRING, para->user_number_1, GM_strlen((char *)para->user_number_1));
+    config_service_set(CFG_USER2_NUMBER, TYPE_STRING, para->user_number_2, GM_strlen((char *)para->user_number_2));
+    config_service_set(CFG_USER3_NUMBER, TYPE_STRING, para->user_number_3, GM_strlen((char *)para->user_number_3));
+    config_service_set(CFG_USER4_NUMBER, TYPE_STRING, para->user_number_4, GM_strlen((char *)para->user_number_4));
 
 
     value_u16 = para->power_alarm_check_tim;
@@ -2197,27 +2197,27 @@ static void convert_para_to_cfg(const GprsParaFileType *para)
 
 
     //注意以下三处都是sizeof, 因为para指向的结构中,没有为结束符预留位置
-    config_service_set(CFG_JT_DEVICE_ID, TYPE_STRING, para->login.DevId, sizeof(para->login.DevId));
+    config_service_set(CFG_JT_DEVICE_ID, TYPE_STRING, para->login.device_id, sizeof(para->login.device_id));
     
-    config_service_set(CFG_JT_OEM_ID, TYPE_STRING, para->login.OemId, sizeof(para->login.OemId));
+    config_service_set(CFG_JT_OEM_ID, TYPE_STRING, para->login.OEM_id, sizeof(para->login.OEM_id));
     
-    config_service_set(CFG_JT_VEHICLE_NUMBER, TYPE_STRING, para->login.VehNum, sizeof(para->login.VehNum));
+    config_service_set(CFG_JT_VEHICLE_NUMBER, TYPE_STRING, para->login.vehicle_number, sizeof(para->login.vehicle_number));
 
-    value_u16 = para->login.wProvID;
+    value_u16 = para->login.province_id;
     config_service_set(CFG_JT_PROVINCE, TYPE_SHORT, &value_u16, sizeof(value_u16));
     
-    value_u16 = para->login.wCityID;
+    value_u16 = para->login.city_id;
     config_service_set(CFG_JT_CITY, TYPE_SHORT, &value_u16, sizeof(value_u16));
 
-    value_u8 = para->login.AtType;
+    value_u8 = para->login.AT_protocol;
     config_service_set(CFG_JT_AT_TYPE, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    value_u8 = para->login.VehLicCol;
+    value_u8 = para->login.vehicle_color;
     config_service_set(CFG_JT_VEHICLE_COLOR, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    config_service_set(CFG_JT_AUTH_CODE, TYPE_STRING, para->authCode, GM_strlen((char *)para->authCode));
+    config_service_set(CFG_JT_AUTH_CODE, TYPE_STRING, para->jt_authority_code, GM_strlen((char *)para->jt_authority_code));
 
-    value_u8 = para->def_cnt;
+    value_u8 = para->shock_alarm_count;
     config_service_set(CFG_SHAKE_COUNT, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
     config_service_set(CFG_MAP_URL, TYPE_STRING, para->map_url, GM_strlen((char *)para->map_url));
@@ -2253,13 +2253,13 @@ static void convert_para_to_cfg(const GprsParaFileType *para)
     config_service_set(CFG_PROTOCOL, TYPE_BYTE, &value_u8, sizeof(value_u8));
     config_service_set(CFG_PROTOCOL_VER, TYPE_BYTE, &value_u8_2, sizeof(value_u8_2));
 
-    value_u8 = para->Regis;
+    value_u8 = para->jt_registered;
     config_service_set(CFG_JT_ISREGISTERED, TYPE_BOOL, &value_u8, sizeof(value_u8));
 
     value_u16 = para->chr_delay_tim;
     config_service_set(CFG_CHARGE_DELAY, TYPE_SHORT, &value_u16, sizeof(value_u16));
 
-    value_u8 = para->LockIp;
+    value_u8 = para->ip_lock_mode;
     config_service_set(CFG_SERVERLOCK, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
     value_u8 = para->min_snr;
@@ -2277,25 +2277,25 @@ static void convert_para_to_cfg(const GprsParaFileType *para)
     
 
 
-    value_u16 = para->staticrepTim;
+    value_u16 = para->static_check_interval;
     config_service_set(CFG_STATIC_CHECK_TIME, TYPE_SHORT, &value_u16, sizeof(value_u16));
 
-    value_u8 = para->staticrepSpeed;
+    value_u8 = para->static_check_speed;
     config_service_set(CFG_STATIC_CHECK_SPEED, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    value_u8 = para->staticrepCnt;
+    value_u8 = para->static_check_count;
     config_service_set(CFG_STATIC_CHECK_COUNT, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    value_u16 = para->lbsInterval;
+    value_u16 = para->lbs_interval;
     config_service_set(CFG_LBS_INTERVAL, TYPE_SHORT, &value_u16, sizeof(value_u16));
 
-    value_u16 = para->gpsNotFixedTim;
+    value_u16 = para->gps_not_fix_time;
     config_service_set(CFG_WAIT_GPS_TIME, TYPE_SHORT, &value_u16, sizeof(value_u16));
 
     value_u8 = para->reopen_gps_time;
     config_service_set(CFG_REOPEN_GSP_TIME, TYPE_BYTE, &value_u8, sizeof(value_u8));
 
-    value_u16 = para->AccCheckTim;
+    value_u16 = para->acc_check_interval;
     config_service_set(CFG_ACC_CHECK_TIME, TYPE_SHORT, &value_u16, sizeof(value_u16));
 
 

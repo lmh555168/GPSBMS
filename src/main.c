@@ -1,5 +1,5 @@
 /**
- * Copyright ? Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        main.c
  * Author:           王志华       
  * Version:          1.0
@@ -43,10 +43,42 @@
 #include "auto_test.h"
 #include "update_file.h"
 #include "bms.h"
+#include "gm_app.h"
 
 
 static void timer_self_test_start(void);
 static void upload_boot_log(void);
+
+
+extern s32 TK_dll_set_sb(S32 val);
+extern void app_main_entry(void);
+extern void DLL_init_SB(void);
+
+extern const s32 service_feature;
+u32 dll_version=0;
+u32 dll_edition=0;
+s32 g_exportfunc[3]={0};
+
+void Service_Entry(dll_struct* dll)
+{
+	TK_dll_set_sb(service_feature);
+
+	dll_version = dll->header.version;
+	dll_edition = dll->header.feature;
+	dll->export_func_count = sizeof(g_exportfunc) / sizeof(g_exportfunc[0]);
+	dll->export_funcs = g_exportfunc;
+	
+	dll->export_funcs[0] = (S32)DLL_init_SB;
+	dll->export_funcs[1] = (S32)app_main_entry;
+}
+
+
+void DLL_init_SB(void)
+{
+	TK_dll_set_sb(service_feature);
+}
+
+
 
 
 //注意主函数里面调用其他函数的顺序有严格要求

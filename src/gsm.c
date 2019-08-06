@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        gsm.h
  * Author:           李耀轩       
  * Version:          1.0
@@ -265,17 +265,17 @@ GM_ERRCODE gsm_get_cell_info(gm_cell_info_struct* p_cell_info)
 
 	if (!s_gsm.sim_is_valid)
 	{
+		LOG(ERROR,"SIM is invalid");
 		return GM_NOT_INIT;
 	}
+    if((s_gsm.cell_info.serv_info.lac > 0)&&(s_gsm.cell_info.serv_info.ci > 0))
+    {
+        *p_cell_info = s_gsm.cell_info;
+    	LOG(DEBUG,"Succeed to Get LBS");
+    	return GM_SUCCESS;
+    }
 
-	if (0 == s_gsm.cell_info.nbr_cell_num)
-	{
-		return GM_NOT_INIT;
-	}
-	
-	*p_cell_info = s_gsm.cell_info;
-	LOG(DEBUG,"Succeed to Get LBS");
-	return GM_SUCCESS;
+    return GM_NOT_INIT;
 }
 
 static void check_sim_card(void)

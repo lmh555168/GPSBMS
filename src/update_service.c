@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        update_service.h
  * Author:           王志华       
  * Version:          1.0
@@ -231,8 +231,7 @@ GM_ERRCODE update_service_create(bool first_create)
         }
     }
     
-    s_update_socket.access_id = SOCKET_INDEX_UPDATE;
-    gm_socket_init(&s_update_socket);
+    gm_socket_init(&s_update_socket, SOCKET_INDEX_UPDATE);
 
     GM_memset(addr, 0x00, sizeof(addr));
     idx = GM_sscanf((const char *)config_service_get_pointer(CFG_UPDATESERVERADDR), "%[^:]:%d", addr, &port);
@@ -257,6 +256,7 @@ GM_ERRCODE update_service_create(bool first_create)
     else
     {
         gm_socket_set_ip_port(&s_update_socket, IP, port, config_service_update_socket_type());
+        system_state_set_ip_cache(SOCKET_INDEX_UPDATE, IP);
     }
 
     s_update_socket_extend.getting_data = 0;

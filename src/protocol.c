@@ -7,7 +7,7 @@
 #include "protocol.h"
 #include "protocol_goome.h"
 #include "protocol_jt808.h"
-#include "protocol_concox.h"
+//#include "protocol_concox.h"
 #include "log_service.h"
 #include "config_service.h"
 #include "gps_save.h"
@@ -143,24 +143,6 @@ void protocol_msg_receive(SocketType *socket)
         msg_len = MKWORD(head[3], head[4]);
         msg_len = msg_len + 5;
         break;
-    case PROTOCOL_CONCOX:
-        if(PROTOCOL_HEADER_CONCOX == head[0] && PROTOCOL_HEADER_CONCOX == head[1])
-        {
-            msg_len = head[2];
-            msg_len += 5;
-        }
-        else if(PROTOCOL_HEADER_CONCOX_NEW == head[0] && PROTOCOL_HEADER_CONCOX_NEW == head[1])
-        {
-            msg_len = MKWORD(head[2], head[3]);;
-            msg_len += 6;
-        }
-        else
-        {
-            LOG(WARN,"clock(%d) protocol_msg_receive assert(PROTOCOL_CONCOX protocol(%d) head(%02x)) failed.", 
-                util_clock(), config_service_get_app_protocol(), head[0]);
-            return;
-        }
-        break;
     case PROTOCOL_JT808:
     {
         u8 check[1] = {0x7e};
@@ -249,10 +231,6 @@ void protocol_msg_receive(SocketType *socket)
     case PROTOCOL_GOOME:  // PROTOCOL_HEADER_GOOME
         protocol_goome_parse_msg(pdata,  msg_len);
         break;
-    case PROTOCOL_CONCOX:
-        log_service_print_hex((const char *)pdata, msg_len);
-        protocol_concox_parse_msg(pdata,  msg_len);
-        break;
     case PROTOCOL_JT808:
         protocol_jt_parse_msg(pdata,  msg_len);
         break;
@@ -282,9 +260,6 @@ GM_ERRCODE protocol_send_login_msg(SocketType *socket)
     {
     case PROTOCOL_GOOME:
         protocol_goome_pack_login_msg(buff, &idx, len);  //16 bytes
-        break;
-    case PROTOCOL_CONCOX:
-        protocol_concox_pack_login_msg(buff, &idx, len);  // PROTOCOL_VER_GT02 22bytes.    other 18bytes
         break;
     case PROTOCOL_JT808:
         config_service_get(CFG_JT_ISREGISTERED, TYPE_BOOL, &value_u8, sizeof(value_u8));
@@ -336,9 +311,6 @@ GM_ERRCODE protocol_send_device_msg(SocketType *socket)
     case PROTOCOL_GOOME:
         protocol_goome_pack_iccid_msg(buff, &idx, len);  //17 bytes
         break;
-    case PROTOCOL_CONCOX:
-        protocol_concox_pack_device_status_msg(buff, &idx, len);  //38bytes
-        break;
     case PROTOCOL_JT808:
         protocol_jt_pack_iccid_msg(buff, &idx, len);  // max 39 bytes
         break;
@@ -378,9 +350,6 @@ GM_ERRCODE protocol_send_heartbeat_msg(SocketType *socket)
     {
     case PROTOCOL_GOOME:
         protocol_goome_pack_heartbeat_msg(buff, &idx, len);  //17 bytes
-        break;
-    case PROTOCOL_CONCOX:
-        protocol_concox_pack_heartbeat_msg(buff, &idx, len);  // max 20 bytes
         break;
     case PROTOCOL_JT808:
         protocol_jt_pack_heartbeat_msg(buff, &idx, len);  // max 19 bytes
@@ -513,9 +482,6 @@ GM_ERRCODE protocol_send_remote_ack(SocketType *socket, u8 *pRet, u16 retlen)
     {
     case PROTOCOL_GOOME:
         protocol_goome_pack_remote_ack(buff, &idx, len, pRet, retlen);  //12+retlen bytes
-        break;
-    case PROTOCOL_CONCOX:
-        protocol_concox_pack_remote_ack(buff, &idx, len, pRet, retlen);  // max 18+retlen bytes
         break;
     case PROTOCOL_JT808:
         protocol_jt_pack_remote_ack(buff, &idx, len, pRet, retlen);  //22|26 +retlen bytes

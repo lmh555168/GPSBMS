@@ -14,47 +14,56 @@
 
 #define PROTOCOL_HEADER_AGPS 0x29
 #define PROTOCOL_TAIL_AGPS   0x0D
-#define AGPS_MSG_REQ_LENTH 500  //由于udp受MTU限制,500比较安全
+
+//由于udp受MTU限制,500比较安全
+#define AGPS_MSG_REQ_LENTH 500  
 
 #define AGPS_MSG_PACKAGE_LENTH  21
 #define TWO_HOUR_SECONDS   (3600*2)
 #define SIX_HOUR_SECONDS   (3600*6)
 #define EPO_GPS_DATA_6HOURS_LENTH   2304
-#define  AGPS_FILE_PATH           L"Z:\\goome\\GmAgpsFile\0"
-#define  EPO_FILE_PATH            L"Z:\\goome\\GmEpoFile.DAT\0"
+#define AGPS_FILE_PATH L"Z:\\goome\\GmAgpsFile\0"
+#define EPO_FILE_PATH L"Z:\\goome\\GmEpoFile.DAT\0"
 
 static SocketType s_agps_socket = {-1,"",SOCKET_STATUS_ERROR,};
+
 static u8 s_at6558_flag[] = {0x41,0x47,0x4E,0x53,0x53,0x20,0x64,0x61,0x74,0x61,0x20,0x66,0x72,0x6F,0x6D,0x20,0x43,0x41,0x53,0x49,0x43};
 static u8 s_techtotop_flag[] = {0x54, 0x65, 0x63, 0x68, 0x74, 0x6F, 0x74, 0x6F, 0x70, 0x20, 0x41, 0x2D, 0x47, 0x4E, 0x53, 0x53, 0x20, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x0A};
 
 typedef struct
 {
-    u8 required_agps;   //是否gps模块申请了gps
-    u8 timing;    //是否正在请求校时
+	//是否gps模块申请了gps
+    bool required_agps;   
+
+	 //是否正在请求校时
+    bool timing;   
 
     // epo/agps 文件信息
-    u32 data_len;    // 消息包总大小
-    u32 data_start;   // 请求文件时,数据起始位置
-}SocketTypeAgpsExtend;
-static SocketTypeAgpsExtend s_agps_socket_extend = {0,0,0,0};
+    // 消息包总大小
+    u32 data_len;  
 
+	// 请求文件时,数据起始位置
+    u32 data_start;   
+}SocketTypeAgpsExtend;
+
+static SocketTypeAgpsExtend s_agps_socket_extend = {0,0,0,0};
 
 typedef struct
 {
-    u16 crc;      // applied_math_calc_common_crc16
-    u8 gps_dev_type;   //GPSChipType
+    u16 crc;         // applied_math_calc_common_crc16
+    u8 gps_dev_type; //GPSChipType
     u8 leap_seconds; // 润秒数
     u32 file_flag;   // 文件flag
     u32 len;         // pdata长度
     u32 start_time;  //utc 开始时间
     float lng;       //经度
     float lat;       //纬度
-    u32 last;  // 此文件能管多久,一般是2小时, 服务器每半小时拿一次数据,如果数据中不带时间的话, 则取1.5小时
+    u32 last;        // 此文件能管多久,一般是2小时, 服务器每半小时拿一次数据,如果数据中不带时间的话, 则取1.5小时
     u8 data[AGPS_MSG_REQ_LENTH*8];  //content.
 }AgpsFileExtend;
 
-static AgpsFileExtend s_agps_file_extend = {0,0,0,0,0,0,0.0,0.0,0, };
-static AgpsFileExtend s_agps_file_inuse = {0,0,0,0,0,0,0.0,0.0,0, };
+static AgpsFileExtend s_agps_file_extend = {0};
+static AgpsFileExtend s_agps_file_inuse = {0};
 
 #define AGPS_FILE_EXTEND_HEAD_SIZE (sizeof(AgpsFileExtend) - (AGPS_MSG_REQ_LENTH*8))
 
@@ -268,8 +277,7 @@ GM_ERRCODE agps_service_create(bool first_create)
         }
     }
 	
-    s_agps_socket.access_id = SOCKET_INDEX_AGPS;
-    gm_socket_init(&s_agps_socket);
+    gm_socket_init(&s_agps_socket, SOCKET_INDEX_AGPS);
 
     GM_memset(addr, 0x00, sizeof(addr));
     idx = GM_sscanf((const char *)config_service_get_pointer(CFG_AGPSSERVERADDR), "%[^:]:%d", addr, &port);
@@ -283,9 +291,9 @@ GM_ERRCODE agps_service_create(bool first_create)
     {
         if(util_is_valid_dns(addr, GM_strlen((const char *)addr)))
         {
-            gm_socket_set_addr(&s_agps_socket, addr, GM_strlen((const char *)addr), port, STREAM_TYPE_DGRAM);
+            gm_socket_set_addr(&s_agps_socket, addr, GM_strlen((const char *)addr), port, config_service_agps_socket_type());
 			system_state_get_ip_cache(SOCKET_INDEX_AGPS, IP);
-			gm_socket_set_ip_port(&s_agps_socket, IP, port, STREAM_TYPE_DGRAM);
+			gm_socket_set_ip_port(&s_agps_socket, IP, port, config_service_agps_socket_type());
         }
         else
         {
@@ -295,7 +303,8 @@ GM_ERRCODE agps_service_create(bool first_create)
     }
     else
     {
-        gm_socket_set_ip_port(&s_agps_socket, IP, port, STREAM_TYPE_DGRAM);
+        gm_socket_set_ip_port(&s_agps_socket, IP, port, config_service_agps_socket_type());
+        system_state_set_ip_cache(SOCKET_INDEX_AGPS, IP);
     }
 
 
@@ -421,7 +430,7 @@ static void agps_service_init_proc(void)
     {
         //得到lbs信息后启动校时
         ret = gsm_get_cell_info(&lbs);
-        if (GM_SUCCESS!=ret || lbs.nbr_cell_num ==0)
+        if (GM_SUCCESS!=ret)
         {
             return;
         }
@@ -508,13 +517,16 @@ void agps_service_close_for_reconnect(void)
 static void agps_service_work_proc(void)
 {
     u32 current_time = util_clock();
+    u8 repeat_count;
+    repeat_count = config_service_agps_socket_type() == STREAM_TYPE_STREAM?1:MAX_MESSAGE_REPEAT;
+    
     if((current_time - s_agps_socket.send_time) >= MESSAGE_TIME_OUT)
     {
         if(s_agps_socket_extend.timing)
         {
             //发送请求阶段 
             s_agps_socket.status_fail_count ++;
-            if(s_agps_socket.status_fail_count >= MAX_MESSAGE_REPEAT)
+            if(s_agps_socket.status_fail_count >= repeat_count)
             {
                 LOG(INFO,"clock(%d) agps_service_work_proc failed:%d", util_clock(), s_agps_socket.status_fail_count);
                 agps_service_close_for_reconnect();
@@ -528,7 +540,7 @@ static void agps_service_work_proc(void)
         {
             //发送请求frame阶段 
             s_agps_socket.status_fail_count ++;
-            if(s_agps_socket.status_fail_count >= MAX_MESSAGE_REPEAT)
+            if(s_agps_socket.status_fail_count >= repeat_count)
             {
                 LOG(INFO,"clock(%d) agps_service_work_proc failed:%d", util_clock(), s_agps_socket.status_fail_count);
                 agps_service_close_for_reconnect();
@@ -1169,7 +1181,7 @@ static void agps_msg_parse_taidou_ack(u8 *pdata, u16 len)
 
     if(s_agps_socket_extend.data_start == 1)
     {
-        if(0 == GM_memcmp(&pdata[19],s_techtotop_flag,sizeof(s_at6558_flag)))
+        if(0 == GM_memcmp(&pdata[19],s_techtotop_flag,sizeof(s_techtotop_flag)))
         {
             //首包
             s_agps_file_extend.file_flag = file_flag;
@@ -1354,7 +1366,7 @@ static void agps_msg_parse_zkw_ack(u8 *pdata, u16 len)
         
         //后继包
         GM_memcpy(&s_agps_file_extend.data[s_agps_file_extend.len], &pdata[19], len - AGPS_MSG_PACKAGE_LENTH);
-        s_agps_file_extend.len += (len - AGPS_MSG_PACKAGE_LENTH);;
+        s_agps_file_extend.len += (len - AGPS_MSG_PACKAGE_LENTH);
         s_agps_socket_extend.data_start += (len - AGPS_MSG_PACKAGE_LENTH);
 
         LOG(DEBUG,"clock(%d) agps_msg_parse_zkw_ack file_len(%d) start(%d).",

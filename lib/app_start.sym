@@ -1,4 +1,4 @@
-#<SYMDEFS># ARM Linker, ADS1.2 [Build 842]: Last Updated: Wed Oct 29 16:18:30 2014   
+#<SYMDEFS># ARM Linker, RVCT3.0 [Build 1021]: Last Updated: Wed Jul 31 17:56:35 2019   
 0x00000000 A GM_Trace
 0x00000001 A GM_ReleaseBuild
 0x00000002 A GM_ReleaseBranch
@@ -81,8 +81,8 @@
 0x0000004F A GM_SocketSend
 0x00000050 A GM_SocketRegisterCallBack
 0x00000051 A GM_GetLocalIP
-0x00000052 A ZG_SleepEnable
-0x00000053 A ZG_SleepDisable
+0x00000052 A GM_SleepEnable
+0x00000053 A GM_SleepDisable
 0x00000054 A GM_KpledLevelCtrl
 0x00000055 A GM_CreateKalTimer
 0x00000056 A GM_StartKalTimer

@@ -51,6 +51,7 @@ typedef struct
     SocketType *socket;
     u8 count; 
     CurrentGetHostByNameStatus status;
+    char addr[GOOME_DNS_MAX_LENTH];    /*dns name*/
 }CurrentGetHostByName;
 
 static CurrentGetHostByName current_get_host;
@@ -149,7 +150,7 @@ GM_ERRCODE gm_socket_global_init(void)
 
 
 /* init socket*/
-GM_ERRCODE gm_socket_init(SocketType *socket)
+GM_ERRCODE gm_socket_init(SocketType *socket, SocketIndexEnum access_id)
 {
     socket->id=-1;
     socket->status = SOCKET_STATUS_INIT;
@@ -157,6 +158,10 @@ GM_ERRCODE gm_socket_init(SocketType *socket)
     socket->status_fail_count = 0;
     socket->excuted_get_host = 0;
     socket->last_ack_seq = 0;
+    socket->addr[0] = 0;
+    socket->ip[0] = socket->ip[1] = socket->ip[2] = socket->ip[3] = 0;
+    socket->port = 0;
+    socket->access_id = access_id;
 
     fifo_init(&(socket->fifo), SIZE_OF_SOCK_FIFO);
     add_to_all_sockets(socket);
@@ -244,6 +249,7 @@ void current_get_host_init(void)
     current_get_host.socket = NULL;
     current_get_host.count = 0;
     current_get_host.status = CURRENT_GET_HOST_INIT;
+    current_get_host.addr[0] = 0;
 }
 
 /* get host can only start one by one .*/
@@ -252,6 +258,7 @@ static void current_get_host_start(SocketType *socket)
     current_get_host.socket = socket;
     current_get_host.count = 0;
     current_get_host.status = CURRENT_GET_HOST_CONTINUE;
+    GM_strncpy(current_get_host.addr,socket->addr,sizeof(current_get_host.addr));
 }
 
 
@@ -261,6 +268,14 @@ void socket_get_host_by_name_callback(void *msg)
     {
         LOG(ERROR,"clock(%d) socket_get_host_by_name_callback assert(current_get_host.socket != NULL) failed.", 
 			util_clock());
+        current_get_host.status = CURRENT_GET_HOST_INIT;
+        return;
+    }
+    
+    if(GM_strcmp(current_get_host.addr, current_get_host.socket->addr) != 0)
+    {
+        LOG(INFO,"clock(%d) socket_get_host_by_name_callback (%s != %s).", 
+			util_clock(),current_get_host.addr, current_get_host.socket->addr);
         current_get_host.status = CURRENT_GET_HOST_INIT;
         return;
     }

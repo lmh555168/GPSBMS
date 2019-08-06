@@ -57,8 +57,6 @@ $appfun     LDR     pc, =$libfun
         
 ;       /*Add other export api according to the format of above*/ 
 
-
-
 	Subfun GM_Trace
 	Subfun GM_ReleaseBuild
 	Subfun GM_ReleaseBranch
@@ -141,8 +139,8 @@ $appfun     LDR     pc, =$libfun
 	Subfun GM_SocketSend
 	Subfun GM_SocketRegisterCallBack
 	Subfun GM_GetLocalIP
-	Subfun ZG_SleepEnable
-	Subfun ZG_SleepDisable
+	Subfun GM_SleepEnable
+	Subfun GM_SleepDisable
 	Subfun GM_KpledLevelCtrl
 	Subfun GM_CreateKalTimer
 	Subfun GM_StartKalTimer

@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        watch_dog.h
  * Author:           王志华       
  * Version:          1.0
@@ -67,6 +67,16 @@ GM_ERRCODE watch_dog_timer_proc(void);
  * Others:	   
  */
 GM_ERRCODE watch_dog_enable(bool enable);
+
+/**
+ * Function:   停止喂硬件看门狗，达到硬重启的目的
+ * Description:通过指令下发
+ * Input:	   无
+ * Output:	   无
+ * Return:	   GM_SUCCESS——成功；其它错误码——失败
+ * Others:	   
+ */
+GM_ERRCODE watch_dog_hard_reboot(void);
 
 #endif
 

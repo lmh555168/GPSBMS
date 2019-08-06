@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        nmea.h
  * Author:           王志华       
  * Version:          1.0
@@ -595,7 +595,7 @@ NMEASentenceID nmea_sentence_id(const char* p_sentence, const U16 len, bool stri
 		{
 			return NMEA_INVALID;
 		}
-		cmd = head_buff[2];;
+		cmd = head_buff[2];
 		if (AT_AID_ACK_CMD == cmd)
 		{
 			return NMEA_SENTENCE_AT_ACK;
@@ -628,65 +628,67 @@ NMEASentenceID nmea_sentence_id(const char* p_sentence, const U16 len, bool stri
     {
         return NMEA_SENTENCE_TXT;
     }
-
-	if (!GM_strcmp(type+2, "INF"))
+	else if (!GM_strcmp(type+2, "INF"))
     {
         return NMEA_SENTENCE_INF;
     }
-
-	if (!GM_strcmp(type, "PMTK011") || !GM_strcmp(type,"PMTK010"))
+	else if (!GM_strcmp(type, "PMTK011") || !GM_strcmp(type,"PMTK010"))
     {
         return NMEA_SENTENCE_MTK_START;
     }
-
-	if (!GM_strcmp(type, "PMTK001"))
+	else if (!GM_strcmp(type, "PMTK001"))
     {
         return NMEA_SENTENCE_MTK_ACK;
     }
-
-	if (!GM_strcmp(type, "PMTK705"))
+	else if (!GM_strcmp(type, "PMTK705"))
     {
         return NMEA_SENTENCE_MTK_VER;
     }
-
-    if (!GM_strcmp(type+2, "RMC"))
+    else if (!GM_strcmp(type+2, "RMC"))
     {
         return NMEA_SENTENCE_RMC;
     }
-    if (!GM_strcmp(type+2, "GGA"))
+    else if (!GM_strcmp(type+2, "GGA"))
     {
         return NMEA_SENTENCE_GGA;
     }
-    if (!GM_strcmp(type+2, "GSA"))
+    else if (!GM_strcmp(type+2, "GSA"))
     {
         return NMEA_SENTENCE_GSA;
     }
-    if (!GM_strcmp(type+2, "GLL"))
+    else if (!GM_strcmp(type+2, "GLL"))
     {
         return NMEA_SENTENCE_GLL;
     }
-    if (!GM_strcmp(type+2, "GST"))
+    else if (!GM_strcmp(type+2, "GST"))
     {
         return NMEA_SENTENCE_GST;
     }
-    if (!GM_strcmp(type, "GPGSV"))
+    else if (!GM_strcmp(type, "GPGSV"))
     {
         return NMEA_SENTENCE_GSV;
     }
-    if (!GM_strcmp(type+2, "VTG"))
+    else if (!GM_strcmp(type, "BDGSV"))
+    {
+        return NMEA_SENTENCE_BDGSV;
+    }
+    else if (!GM_strcmp(type+2, "VTG"))
     {
         return NMEA_SENTENCE_VTG;
     }
-    if (!GM_strcmp(type+2, "ZDA"))
+    else if (!GM_strcmp(type+2, "ZDA"))
     {
         return NMEA_SENTENCE_ZDA;
     }
-	if (!GM_strcmp(type+2, "ACCURACY"))
+	else if (!GM_strcmp(type+2, "ACCURACY"))
     {
         return NMEA_SENTENCE_ACCURACY;
     }
-	//LOG(DEBUG,"Unknown type:%s",type);
-    return NMEA_UNKNOWN;
+	else
+	{
+		//LOG(DEBUG,"Unknown type:%s",type);
+	    return NMEA_UNKNOWN;
+	}
 }
 
 static U8 nmea_checksum(const char* p_sentence)

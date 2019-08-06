@@ -75,7 +75,7 @@ $(TARGET).axf: $(ALL_OBJS) $(ALL_LIB_FILES)
 	
 	$(LINK) -o $@ $(LINK_FLAGS) $(TARGET).map -entry Service_Entry -first $(PLATFORM_HEADER_FILE)\(ServiceHeader\)\
 	        $(OBJ_DIR)/$(PLATFORM_SYMBOL_FILE) $(OBJ_DIR)/$(PLATFORM_HEADER_FILE) $(ALL_OBJS)\
-	        $(ALL_LINK_LIB_FILES) $(LIB_DIR)\app_main.lib
+	        $(ALL_LINK_LIB_FILES)
 	        
 	$(BIN_TOOL) $(TARGET).axf -bin -o $(TARGET).bin		
 	

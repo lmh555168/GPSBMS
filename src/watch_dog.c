@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        watch_dog.h
  * Author:           王志华       
  * Version:          1.0
@@ -39,12 +39,14 @@ typedef struct
 {
 	bool software_watchdog_enable;
 	bool last_gpio_pin_level;
+	bool stop_feed_hard_watch_dog;
 }WatchDog, *PWatchDog;
 	
 static WatchDog s_watch_dog;
 
 GM_ERRCODE watch_dog_create(void)
 {
+	
 	//第1个软件看门狗,内部固定30秒重启
 	GM_SoftwareWdtCounterEnable(true);
 
@@ -52,7 +54,8 @@ GM_ERRCODE watch_dog_create(void)
 	//使用两个软件看门狗是为了确保可靠性
 	GM_SetSwLogicCounterEnable(true);
 	GM_SetSwLogicCounterMax(GM_SECCOND_SW_WDT_RESTART_TIME);
-	
+
+	s_watch_dog.stop_feed_hard_watch_dog = false;
 	s_watch_dog.software_watchdog_enable = true;
 	s_watch_dog.last_gpio_pin_level = false;
 	
@@ -69,10 +72,13 @@ GM_ERRCODE watch_dog_destroy(void)
 
 GM_ERRCODE watch_dog_timer_proc(void)
 {
-
-	//处理硬件看门狗
-	s_watch_dog.last_gpio_pin_level = !(s_watch_dog.last_gpio_pin_level);
-	hard_ware_set_watchdog(s_watch_dog.last_gpio_pin_level);
+	
+	if (!s_watch_dog.stop_feed_hard_watch_dog)
+	{
+		//处理硬件看门狗
+		s_watch_dog.last_gpio_pin_level = !(s_watch_dog.last_gpio_pin_level);
+		hard_ware_set_watchdog(s_watch_dog.last_gpio_pin_level);
+	}
 
 	//处理软件看门狗
 	if (s_watch_dog.software_watchdog_enable)
@@ -98,6 +104,12 @@ GM_ERRCODE watch_dog_enable(bool enable)
 	GM_SoftwareWdtCounterEnable(enable);
 	GM_SetSwLogicCounterEnable(enable);
 	
+	return GM_SUCCESS;
+}
+
+GM_ERRCODE watch_dog_hard_reboot(void)
+{
+	s_watch_dog.stop_feed_hard_watch_dog = true;
 	return GM_SUCCESS;
 }
 

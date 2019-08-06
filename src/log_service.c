@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        log_service.h
  * Author:           王志华       
  * Version:          1.0
@@ -25,6 +25,7 @@
 #include <stdarg.h>
 #include <stdio.h> 
 #include <gm_stdlib.h>
+#include <gm_system.h>
 #include "log_service.h"
 #include "config_service.h"
 #include "gm_stdlib.h"
@@ -57,12 +58,13 @@ typedef struct
 typedef struct
 {
     u32 data_finish_time;
+	U32 log_seq;
 }LogServiceExtend;
 
 
 static FifoType s_log_data_fifo = {0,0,0,0,0};
 
-static LogServiceExtend s_log_socket_extend;
+static LogServiceExtend s_log_socket_extend = {0,0};
 
 #define GM_LOG_MAX_LEN 1536
 
@@ -294,8 +296,7 @@ GM_ERRCODE log_service_create(void)
     u32 port = 0;
     u8 idx = 0;
 
-    s_log_socket.access_id = SOCKET_INDEX_LOG;
-    gm_socket_init(&s_log_socket);
+    gm_socket_init(&s_log_socket, SOCKET_INDEX_LOG);
     s_log_socket_extend.data_finish_time = 0;
 
     GM_memset(addr, 0x00, sizeof(addr));
@@ -321,6 +322,7 @@ GM_ERRCODE log_service_create(void)
     else
     {
         gm_socket_set_ip_port(&s_log_socket, IP, port, STREAM_TYPE_DGRAM);
+        system_state_set_ip_cache(SOCKET_INDEX_LOG, IP);
     }
 
 	fifo_init(&s_log_data_fifo, LOG_BUFFER_NUM * sizeof(LogSaveData));
@@ -532,17 +534,25 @@ void log_service_send_msg(SocketType *socket)
 		
 		//一条日志<GM*862964022280089*xxxxxx>,6个字节：LOG_PKT_HEAD——3个字节，2个分隔符，1和结束符
 		//日志回复<GM*ACK>
-		send_buf_len = 6 + GM_strlen((const char*)imei) + log_data.len;
+		send_buf_len = 6 + GM_strlen((const char*)imei) + 10 + log_data.len;
 		p_send_buf = GM_MemoryAlloc(send_buf_len + 1);
-		p_send_buf[send_buf_len] = 0;
+		GM_memset(p_send_buf, 0, send_buf_len + 1);
 		
 		//最多从源字符串format中拷贝size字节的内容(含字符串结尾标志'\0')到目标字符串
-		GM_snprintf(p_send_buf, send_buf_len + 1, "%s%c%s%c%s%c", LOG_PKT_HEAD,LOG_PKT_SPLIT,(const char*)imei,LOG_PKT_SPLIT,(const char*)log_data.buf,LOG_PKT_TAIL);
-		
+		GM_snprintf(p_send_buf, send_buf_len + 1, "%s%c%s%c%d%c%s%c", 
+													LOG_PKT_HEAD,
+													LOG_PKT_SPLIT,
+													(const char*)imei,
+													LOG_PKT_SPLIT,
+													s_log_socket_extend.log_seq
+													,LOG_PKT_SPLIT,
+													(const char*)log_data.buf,
+													LOG_PKT_TAIL);
+		s_log_socket_extend.log_seq++;
         if(GM_SUCCESS == gm_socket_send(socket, (U8*)p_send_buf, send_buf_len))
         {
             fifo_pop_len(&s_log_data_fifo, sizeof(LogSaveData));
-			//LOG(DEBUG,"clock(%d) log_service_send_msg msglen(%d):%s", util_clock(), send_buf_len,p_send_buf);
+			LOG(DEBUG,"clock(%d) log_service_send_msg msglen(%d):%s", util_clock(), send_buf_len,p_send_buf);
 			log_data_release(&log_data);
         }
         else
@@ -617,6 +627,7 @@ void log_service_print(LogLevel level,const char *format, ...)
 		return;
 	}
 	uart_write(GM_UART_DEBUG, (U8*)buf, log_data_len);
+	GM_SysMsdelay(2);
 
     // DEBUG 编译默认不upload, 改loglevel后，只报info以上级别的 
 	if (level > DEBUG && s_log_level > DEBUG && s_upload_level   <= level 
@@ -686,8 +697,9 @@ static void log_msg_receive(void)
     // parse buf msg
     // if OK, after creating other socket, transfer to finish
     // not ok, ignore msg.
-    u8 head[100];
-    u32 len = sizeof(head);
+    u8 msg[100] = {0};
+
+	u16 len = sizeof(msg);
 
     if(SOCKET_STATUS_WORK != s_log_socket.status)
     {
@@ -695,7 +707,7 @@ static void log_msg_receive(void)
     }
     
     //get head then delete
-    if(GM_SUCCESS != fifo_peek(&s_log_socket.fifo, head, len))
+    if(GM_SUCCESS != fifo_peek_until(&s_log_socket.fifo, msg, &len,'>'))
     {
         // no msg
         return;
@@ -703,7 +715,7 @@ static void log_msg_receive(void)
 
     fifo_pop_len(&s_log_socket.fifo, len);
 
-	log_service_print(DEBUG,"clock(%d) log_msg_receive msg len(%d)", util_clock(), len);
+	log_service_print(DEBUG,"clock(%d) log_msg_receive msg:%s, len:%d", util_clock(), msg,len);
 
     //do nothing. just read and clear msgs
 

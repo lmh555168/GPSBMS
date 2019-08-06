@@ -152,7 +152,7 @@ SocketType * get_socket_by_accessid(int access_id);
 
 
 /* 在socket 初始化时调用, 初始化socket对应的id, status, fifo等*/
-GM_ERRCODE gm_socket_init(SocketType *socket);
+GM_ERRCODE gm_socket_init(SocketType *socket, SocketIndexEnum access_id);
 GM_ERRCODE gm_socket_connect(SocketType *socket);
 void gm_socket_get_host_by_name_trigger(SocketType *socket);
 void gm_socket_get_host_timer_proc(void);

@@ -205,8 +205,7 @@ GM_ERRCODE update_filemod_create(void)
     u32 port = 0;
     u8 idx = 0;
 	
-    s_file_socket.access_id = SOCKET_INDEX_UPDATE_FILE;
-    gm_socket_init(&s_file_socket);
+    gm_socket_init(&s_file_socket, SOCKET_INDEX_UPDATE_FILE);
 
     GM_memset(addr, 0x00, sizeof(addr));
     idx = GM_sscanf((const char *)config_service_get_pointer(CFG_UPDATEFILESERVER), "%[^:]:%d", addr, &port);
@@ -231,6 +230,7 @@ GM_ERRCODE update_filemod_create(void)
     else
     {
         gm_socket_set_ip_port(&s_file_socket, IP, port, config_service_update_socket_type());
+        system_state_set_ip_cache(SOCKET_INDEX_UPDATE_FILE, IP);
     }
 
     LOG(WARN,"clock(%d) update_filemod_create access_id(%d) fifo(%p).", util_clock(), s_file_socket.access_id, &s_file_socket.fifo);
@@ -728,7 +728,10 @@ static void update_msg_parse_file_data(u8 *pdata, u16 len)
     u16 current_idx = 0;  //从s_file_extend.block_current计, 第 几个. [0-9]
     u16 block_number;
     u32 check_bit = 0x01;
-    GM_ERRCODE ret;
+    GM_ERRCODE ret = GM_SUCCESS;
+    
+    u8 one_send = 1;
+    one_send = (STREAM_TYPE_DGRAM == config_service_update_socket_type())? UPDATE_MAX_PACK_ONE_SEND: 1;
     
     block_number = MKWORD(pdata[13], pdata[14]);
     if(block_number < s_file_extend.block_current)
@@ -736,12 +739,17 @@ static void update_msg_parse_file_data(u8 *pdata, u16 len)
         // already dealed data
         return;
     }
+
     current_idx = block_number - s_file_extend.block_current;
     if(current_idx) check_bit = check_bit << current_idx;
     if(check_bit & s_file_extend.block_status)
     {
         // already dealed data
-        return;
+        if(current_idx < (one_send  - 1))
+        {
+            return;
+        }
+        //else 最后一个包要触发下一批请求
     }
 
     /*
@@ -822,7 +830,6 @@ GM_ERRCODE update_msg_send_data_block_request(SocketType *socket)
     u16 idx = 0, idx_save = 0;  //current place
     u16 current_block = 0; //从0一直到 s_file_extend.total_blocks
     u16 current_idx = 0;  //从s_file_extend.block_current计, 第 几个. [0-9]
-    u32 check_bit = 0x01;
     u8 one_send = 1;
 
     one_send = (STREAM_TYPE_DGRAM == config_service_update_socket_type())? UPDATE_MAX_PACK_ONE_SEND: 1;
@@ -833,10 +840,16 @@ GM_ERRCODE update_msg_send_data_block_request(SocketType *socket)
         current_block < s_file_extend.total_blocks && current_idx < one_send; 
         ++ current_block, ++ current_idx)
     {
+        u32 check_bit = 0x01;
         if(current_idx) check_bit =check_bit << current_idx;
         if (s_file_extend.block_status & check_bit)
         {
-            continue;
+            // already dealed data
+            if(current_idx < (one_send  - 1))
+            {
+                continue;
+            }
+            //else 最后一个包要触发下一批请求
         }
 
         idx = idx_save;  // restore idx for each block
@@ -847,7 +860,8 @@ GM_ERRCODE update_msg_send_data_block_request(SocketType *socket)
 
         len=idx+2;  // 1byte checksum , 1byte 0xD
 
-        LOG(DEBUG,"clock(%d) update_msg_send_data_block_request len(%d) current_block(%d).",util_clock(),len,current_block);
+        LOG(DEBUG,"clock(%d) update_msg_send_data_block_request len(%d) current_block(%d|%d|%x).",
+            util_clock(),len,current_block,s_file_extend.block_current,s_file_extend.block_status);
 
         if(GM_SUCCESS == gm_socket_send(socket, buff, len))
         {

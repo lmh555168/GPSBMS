@@ -1,5 +1,5 @@
 /**
- * Copyright @ Goome Technologies Co., Ltd. 2009-2019. All rights reserved.
+ * Copyright @ 深圳市谷米万物科技有限公司. 2009-2019. All rights reserved.
  * File name:        nmea.h
  * Author:           王志华       
  * Version:          1.0
@@ -77,6 +77,7 @@ typedef enum
     NMEA_SENTENCE_VTG = 17,       // 标准NMEA-0183协议VTG语句
     NMEA_SENTENCE_ZDA = 18,       // 标准NMEA-0183协议ZDA语句
     NMEA_SENTENCE_ACCURACY = 19,  // MTK精度语句
+    NMEA_SENTENCE_BDGSV = 20,     // 标准NMEA-0183协议GSV语句
 }NMEASentenceID;
 
 typedef struct 
