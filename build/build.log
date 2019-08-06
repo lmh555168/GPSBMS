@@ -1,0 +1,13 @@
+;Building Log 
+Warning: A1725W: 'armasm inputfile outputfile' form of command-line is deprecated
+0 Errors, 1 Warning
+"src/bms.c", line 18: Warning:  #117-D: non-void function "bms_uart_receive_data" should return a value
+  		return;
+  		      ^
+"src/bms.c", line 48: Warning:  #167-D: argument of type "char *" is incompatible with parameter of type "const U8 *"
+  	uart_write(GM_UART_BMS,p_cmd, cmd_len);
+  	                       ^
+"src/bms.c", line 96: Warning:  #167-D: argument of type "u8 *" is incompatible with parameter of type "char *"
+  	bms_uart_receive_data(bms_buff,idx,NULL,NULL);
+  	                      ^
+src/bms.c: 3 warnings, 0 errors

@@ -164,8 +164,8 @@ typedef struct
 
 extern s32 GM_SystemReboot(void);
 extern s32  GM_SystemPowerOff(void);
-extern s32 ZG_SleepEnable(void);
-extern s32 ZG_SleepDisable(void);
+extern s32 GM_SleepEnable(void);
+extern s32 GM_SleepDisable(void);
 extern s32 GM_IsinkBacklightCtrl(u8 status, kal_uint8 gpio_dev_level);
 extern s32 GM_KpledLevelCtrl(u8 status, kal_uint8 gpio_dev_level);
 extern s32 GM_GetChrStatus(kal_uint8* chr_status);

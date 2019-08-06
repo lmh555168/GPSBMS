@@ -712,8 +712,7 @@ GM_ERRCODE config_service_create(void)
     u32 port = 0;
     u8 idx = 0;
 
-    s_config_socket.access_id = SOCKET_INDEX_CONFIG;
-    gm_socket_init(&s_config_socket);
+    gm_socket_init(&s_config_socket, SOCKET_INDEX_CONFIG);
 
     GM_memset(addr, 0x00, sizeof(addr));
     idx = GM_sscanf((const char*)config_service_get_pointer(CFG_CFGSERVERADDR), "%[^:]:%d", addr, &port);
@@ -740,6 +739,7 @@ GM_ERRCODE config_service_create(void)
     else
     {
         gm_socket_set_ip_port(&s_config_socket, IP, port, STREAM_TYPE_DGRAM);
+        system_state_set_ip_cache(SOCKET_INDEX_CONFIG, IP);
     }
 
     s_config_socket_extend.last_ok_time = 0;
@@ -1713,5 +1713,11 @@ StreamType config_service_update_socket_type(void)
 {
     return STREAM_TYPE_DGRAM;
     //return STREAM_TYPE_STREAM;
+}
+
+StreamType config_service_agps_socket_type(void)
+{
+    //return STREAM_TYPE_DGRAM;
+    return STREAM_TYPE_STREAM;
 }
 

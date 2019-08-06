@@ -155,7 +155,6 @@ typedef void (*kal_timer_func_ptr)(void *param_ptr);
 *********************************************************
 */
 
-extern s32 ZG_StartKalTimer(U8 timer_id,PsFuncPtr handler_func_ptr,U32 ticks);
 extern s32 GM_StopKalTimer(U8 timer_id);
 extern s32 GM_StartTimer(U16 timerid, U32 delay, FuncPtr funcPtr);
 extern s32 GM_StopTimer(U16 timerid);
